@@ -25,7 +25,7 @@ public class Main {
             }
         } else if (args.length == 2) {
             String year = args[0];
-            String day = args[0];
+            String day = args[1];
 
             if (year.matches("\\d{4}") && day.matches("\\d{1,2}")) {
                 runPuzzle(year, day);
@@ -45,7 +45,7 @@ public class Main {
         try {
             DayFactory.getDay(year, day).solve();
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
-            //ignore
+            System.out.println("Could not create class " + day + " for year: " + year);
         } catch (Exception e) {
             System.out.println("Could not solve puzzle " + day + " for year: " + year);
         }
