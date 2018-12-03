@@ -3,18 +3,12 @@ package aoc2017;
 import aoc.Day;
 
 import java.awt.*;
-import java.util.Collections;
 import java.util.List;
 
 public class Day3 extends Day {
 
     public Day3(String year, String day) {
         super(year, day);
-    }
-
-    @Override
-    public void solve() {
-        solveParts(Collections.singletonList("361527"));
     }
 
     @Override
@@ -34,7 +28,7 @@ public class Day3 extends Day {
         double diff = integer - previousSquare;
 
         Integer edge = (int) Math.ceil(diff / (rows - 1));
-        int position = (int )diff % (rows - 1);
+        int position = (int) diff % (rows - 1);
         if (position == 0) {
             position = rows - 1;
         }
@@ -65,6 +59,70 @@ public class Day3 extends Day {
 
     @Override
     protected void part2(List<String> inputs) {
+        int right = 1;
+        int up = 2;
+        int left = 3;
+        int down = 4;
 
+        Integer goal = Integer.valueOf(inputs.get(0));
+
+        int x = 500;
+        int y = 500;
+        int[][] matrix = new int[999][999];
+
+        matrix[x][y] = 1;
+        int current = 1;
+        int steps = 0;
+        int direction = 0;
+
+        boolean run = true;
+
+        while (run) {
+            if (direction % 2 == 0) {
+                steps++;
+            }
+            direction++;
+
+            whileLoop:
+            for (int i = 1; i <= steps; i++) {
+                if (direction == right) {
+                    x++;
+                } else if (direction == up) {
+                    y--;
+                } else if (direction == left) {
+                    x--;
+                } else if (direction == down) {
+                    y++;
+                }
+                current = calculate(matrix, x, y);
+                matrix[x][y] = current;
+                if (current > goal) {
+                    run = false;
+                    break;
+                }
+            }
+
+            if (direction == 4) {
+                direction = 0;
+            }
+
+        }
+
+        printSolution(1, current);
+    }
+
+    private int calculate(int[][] matrix, int x, int y) {
+        int current = 0;
+
+        current += matrix[x + 1][y];
+        current += matrix[x + 1][y + 1];
+        current += matrix[x + 1][y - 1];
+        current += matrix[x - 1][y];
+        current += matrix[x - 1][y + 1];
+        current += matrix[x - 1][y - 1];
+        current += matrix[x][y + 1];
+        current += matrix[x][y - 1];
+
+        return current;
     }
 }

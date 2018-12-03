@@ -12,13 +12,6 @@ public class Day2 extends Day {
         super(year, day);
     }
 
-    @Override
-    public void solve() {
-        List<String> inputs = getLineInput(getFileName());
-
-        solveParts(inputs);
-    }
-
     protected void part1(List<String> lineInput) {
         Integer countOfTwos = 0;
         Integer countOfThrees = 0;

@@ -12,9 +12,7 @@ public class Day1 extends Day {
 
     @Override
     public void solve() {
-        List<String> inputs = getIntegerInputFromDigits(getFileName());
-
-        solveParts(inputs);
+        solveParts(getIntegerInputFromDigits(getFileName()));
     }
 
     protected void part1(List<String> inputs) {

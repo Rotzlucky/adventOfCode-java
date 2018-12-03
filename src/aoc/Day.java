@@ -13,8 +13,6 @@ public abstract class Day {
     private final String year;
     private final String day;
 
-    public abstract void solve();
-
     public Day(String year, String day) {
         this.year = year;
         this.day = day;
@@ -26,6 +24,10 @@ public abstract class Day {
 
     protected void printSolution(int part, int solution) {
         printSolution(part, String.valueOf(solution));
+    }
+
+    public void solve() {
+        solveParts(getLineInput(getFileName()));
     }
 
     protected void solveParts(List<String> inputs) {

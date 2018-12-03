@@ -45,7 +45,7 @@ public class Main {
         try {
             DayFactory.getDay(year, day).solve();
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
-            System.out.println("Could not create class " + day + " for year: " + year);
+            // System.out.println("Could not create class " + day + " for year: " + year);
         } catch (Exception e) {
             System.out.println("Could not solve puzzle " + day + " for year: " + year);
         }

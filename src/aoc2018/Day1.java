@@ -12,14 +12,6 @@ public class Day1 extends Day {
         super(year, day);
     }
 
-    @Override
-    public void solve() {
-
-        List<String> inputs = getLineInput(getFileName());
-
-        solveParts(inputs);
-    }
-
     protected void part1(List<String> inputs) {
         List<Integer> integerList = getInputsAsInteger(inputs);
 
