@@ -29,6 +29,40 @@ public class Day8 extends Day {
         printSolution(1, count);
     }
 
+    @Override
+    protected void part2(List<String> inputs) {
+        String input = inputs.get(0);
+
+        List<Integer> bytes = Arrays.asList(input.split(" "))
+                .stream()
+                .map(s -> Integer.parseInt(s))
+                .collect(Collectors.toList());
+
+        Node node = parseBytes(bytes);
+
+        int nodeValue = calculateNodeValue(node);
+
+        printSolution(2, nodeValue);
+    }
+
+    private int calculateNodeValue(Node node) {
+        int value;
+
+        if (node.getChildren().isEmpty()) {
+            value = node.getMetaData()
+                    .stream()
+                    .mapToInt(i -> i.intValue()).sum();
+        } else {
+            value = node.getMetaData()
+                    .stream()
+                    .filter(metaDatum -> metaDatum <= node.getChildren().size())
+                    .mapToInt(metaDatum -> calculateNodeValue(node.getChildren().get(metaDatum - 1)))
+                    .sum();
+        }
+
+        return value;
+    }
+
     private int countMetaData(Node node) {
         int sum = node.getMetaData().stream().mapToInt(i -> i.intValue()).sum();
 
@@ -63,10 +97,5 @@ public class Day8 extends Day {
         node.setSize(parsedBytes);
 
         return node;
-    }
-
-    @Override
-    protected void part2(List<String> inputs) {
-
     }
 }
