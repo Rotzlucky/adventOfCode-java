@@ -1,15 +1,14 @@
 package aoc2018;
 
 import aoc.Day;
+import aoc2018.helper.Worker;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,29 +21,19 @@ public class Day7 extends Day {
 
     @Override
     protected void part1(List<String> inputs) {
-        Map<String, List<String>> dependencies = new HashMap<>();
-        TreeSet<String> nextSteps = new TreeSet<>();
-
-        for (String input : inputs) {
-            Pair<String, String> directive = getDirective(input);
-
-            nextSteps.add(directive.getKey());
-            nextSteps.add(directive.getValue());
-
-            List<String> arrayList = dependencies.getOrDefault(directive.getValue(), new ArrayList<>());
-            arrayList.add(directive.getKey());
-            dependencies.put(directive.getValue(), arrayList);
-        }
+        TreeSet<String> allSteps = getAllSteps(inputs);
+        Map<String, List<String>> dependencies = getDependencies(inputs);
 
         String solution = "";
 
         while (true) {
-            String nextStep = getNextStep(dependencies, nextSteps);
+            Optional<String> stringOptional = getNextStep(dependencies, allSteps);
 
-            if (nextStep == null) {
+            if (!stringOptional.isPresent()) {
                 break;
             }
 
+            String nextStep = stringOptional.get();
             solution += nextStep;
 
             for (List<String> value : dependencies.values()) {
@@ -55,9 +44,71 @@ public class Day7 extends Day {
         printSolution(1, solution);
     }
 
-    private String getNextStep(Map<String, List<String>> dependencies, TreeSet<String> nextSteps) {
+    @Override
+    protected void part2(List<String> inputs) {
+        TreeSet<String> allSteps = getAllSteps(inputs);
+        Map<String, List<String>> dependencies = getDependencies(inputs);
+
+        List<Worker> workers = Worker.getWorkers(5, 60);
+
+        int completionTime = 0;
+        boolean oneIsWorking;
+
+        for (int i = 0; i < 1000; i++) {
+            oneIsWorking = false;
+            for (Worker worker : workers) {
+                int work = worker.work();
+                if (work == 0) {
+                    String assignedStep = worker.getAssignedStep();
+                    for (List<String> value : dependencies.values()) {
+                        value.remove(assignedStep);
+                    }
+                }
+
+                if (!worker.isWorking()) {
+                    Optional<String> nextStep = getNextStep(dependencies, allSteps);
+                    nextStep.ifPresent(worker::setAssignedStep);
+                }
+
+                if (worker.isWorking()) {
+                    oneIsWorking = true;
+                }
+            }
+
+            if (!oneIsWorking) {
+                completionTime = i;
+                break;
+            }
+        }
+        printSolution(2, completionTime);
+    }
+
+    private Map<String, List<String>> getDependencies(List<String> inputs) {
+        Map<String, List<String>> dependencies = new HashMap<>();
+        for (String input : inputs) {
+            Pair<String, String> directive = getDirective(input);
+
+            List<String> arrayList = dependencies.getOrDefault(directive.getValue(), new ArrayList<>());
+            arrayList.add(directive.getKey());
+            dependencies.put(directive.getValue(), arrayList);
+        }
+        return dependencies;
+    }
+
+    private TreeSet<String> getAllSteps(List<String> inputs) {
+        TreeSet<String> allSteps = new TreeSet<>();
+
+        for (String input : inputs) {
+            Pair<String, String> directive = getDirective(input);
+            allSteps.add(directive.getValue());
+            allSteps.add(directive.getKey());
+        }
+        return allSteps;
+    }
+
+    private Optional<String> getNextStep(Map<String, List<String>> dependencies, TreeSet<String> nextSteps) {
         if (nextSteps.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
         String nextStep = null;
@@ -68,8 +119,10 @@ public class Day7 extends Day {
             }
         }
 
-        nextSteps.remove(nextStep);
-        return nextStep;
+        if (nextStep != null) {
+            nextSteps.remove(nextStep);
+        }
+        return Optional.ofNullable(nextStep);
     }
 
     private Pair<String, String> getDirective(String input) {
@@ -92,10 +145,5 @@ public class Day7 extends Day {
         }
 
         return new Pair<>(pre, post);
-    }
-
-    @Override
-    protected void part2(List<String> inputs) {
-
     }
 }
