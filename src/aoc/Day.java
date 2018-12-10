@@ -26,6 +26,10 @@ public abstract class Day {
         printSolution(part, String.valueOf(solution));
     }
 
+    protected void printSolution(int part, Long solution) {
+        printSolution(part, String.valueOf(solution));
+    }
+
     public void solve() {
         solveParts(getLineInput(getFileName()));
     }
