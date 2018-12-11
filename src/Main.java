@@ -30,7 +30,14 @@ public class Main {
             if (year.matches("\\d{4}") && day.matches("\\d{1,2}")) {
                 runPuzzle(year, day);
             }
+        } else if (args.length == 3) {
+            String year = args[0];
+            String day = args[1];
+            String variant = args[2];
 
+            if (year.matches("\\d{4}") && day.matches("\\d{1,2}")) {
+                runPuzzle(year, day+variant);
+            }
         }
     }
 
