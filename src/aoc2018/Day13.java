@@ -53,7 +53,6 @@ public class Day13 extends Day {
             Collections.sort(cars, Car.getPositionComparator());
 
             if (cars.size() == 1) {
-                //cars.get(0).move();
                 break;
             }
 
