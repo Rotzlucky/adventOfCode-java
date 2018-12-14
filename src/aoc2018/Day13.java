@@ -3,7 +3,7 @@ package aoc2018;
 import aoc.Day;
 import aoc2018.helper.Car;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
