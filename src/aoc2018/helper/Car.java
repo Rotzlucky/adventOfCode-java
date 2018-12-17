@@ -133,19 +133,8 @@ public class Car {
     }
 
     public static Comparator<Car> getPositionComparator() {
-        return (car1, car2) -> {
-            Integer y1 = car1.getY();
-            Integer y2 = car2.getY();
-            int yComp = y1.compareTo(y2);
-
-            if (yComp != 0) {
-                return yComp;
-            }
-
-            Integer x1 = car1.getX();
-            Integer x2 = car2.getY();
-            return x1.compareTo(x2);
-        };
+        return Comparator.comparingInt(Car::getY)
+                .thenComparing((Car::getX));
     }
 
     public int getIndex() {
