@@ -83,7 +83,7 @@ public class WayFinder {
                 }
                 // Tie-break equidistant points by their reading order
                 if (proposedDistance == currentDistance) {
-                    if (POINT_READING_ORDER.compare(point, shortestEdge.get(adjacent)) < 0) {
+                    if (POINT_READING_ORDER.compare(getFirstPoint(point), getFirstPoint(shortestEdge.get(adjacent))) < 0) {
                         shortestEdge.put(adjacent, point);
                     }
                 }
@@ -123,6 +123,10 @@ public class WayFinder {
         }
 
         return cachedNeighbours.get(point);
+    }
+
+    private Point getFirstPoint(Point point) {
+        return getShortestPath(point).getFirst();
     }
 
     public LinkedList<Point> getShortestPath(Point point) {

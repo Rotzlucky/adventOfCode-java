@@ -38,8 +38,13 @@ public class Combatant {
         }
     }
 
-    public List<Combatant> getEnemiesInFightingRange(List<Combatant> combatants) {
-        return combatants
+    public Combatant(Point point, char currentChar, int attackPower) {
+        this(point, currentChar);
+        this.attack = attackPower;
+    }
+
+    public List<Combatant> getEnemiesInFightingRange(List<Combatant> enemies) {
+        return enemies
                 .stream()
                 .filter(c -> c.getHitPoints() > 0 && Math.abs(getX() - c.getX()) + Math.abs(getY() - c.getY()) == 1)
                 .sorted(Comparator.comparingInt(Combatant::getHitPoints).thenComparing(READING_ORDER_COMPARATOR))
@@ -72,7 +77,9 @@ public class Combatant {
 
     private LinkedList<Point> getPathToDestination(List<Combatant> enemies, WayFinder wayFinder) {
         List<Point> destinations = new ArrayList<>();
-        enemies.stream().forEach(c -> destinations.addAll(wayFinder.getNonBlockedNeighbours(c.getPosition())));
+        enemies.stream()
+                .filter(c -> c.getHitPoints() > 0)
+                .forEach(c -> destinations.addAll(wayFinder.getNonBlockedNeighbours(c.getPosition())));
 
         if (destinations.isEmpty()) {
             return new LinkedList<>();
