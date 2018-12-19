@@ -210,4 +210,58 @@ public class Operations {
         return 0;
     }
 
+    public static int[] execute(String opCodeString, Instruction instruction, int[] register) {
+        switch (opCodeString) {
+            case "addr":
+                register[instruction.getC()] = register[instruction.getA()] + register[instruction.getB()];
+                break;
+            case "addi":
+                register[instruction.getC()] = register[instruction.getA()] + instruction.getB();
+                break;
+            case "mulr":
+                register[instruction.getC()] = register[instruction.getA()] * register[instruction.getB()];
+                break;
+            case "muli":
+                register[instruction.getC()] = register[instruction.getA()] * instruction.getB();
+                break;
+            case "banr":
+                register[instruction.getC()] = register[instruction.getA()] & register[instruction.getB()];
+                break;
+            case "bani":
+                register[instruction.getC()] = register[instruction.getA()] & instruction.getB();
+                break;
+            case "borr":
+                register[instruction.getC()] = register[instruction.getA()] | register[instruction.getB()];
+                break;
+            case "bori":
+                register[instruction.getC()] = register[instruction.getA()] | instruction.getB();
+                break;
+            case "setr":
+                register[instruction.getC()] = register[instruction.getA()];
+                break;
+            case "seti":
+                register[instruction.getC()] = instruction.getA();
+                break;
+            case "gtir":
+                register[instruction.getC()] = instruction.getA() > register[instruction.getB()] ? 1 : 0;
+                break;
+            case "gtri":
+                register[instruction.getC()] = register[instruction.getA()] > instruction.getB() ? 1 : 0;
+                break;
+            case "gtrr":
+                register[instruction.getC()] = register[instruction.getA()] > register[instruction.getB()] ? 1 : 0;
+                break;
+            case "eqir":
+                register[instruction.getC()] = instruction.getA() == register[instruction.getB()] ? 1 : 0;
+                break;
+            case "eqri":
+                register[instruction.getC()] = register[instruction.getA()] == instruction.getB() ? 1 : 0;
+                break;
+            case "eqrr":
+                register[instruction.getC()] = register[instruction.getA()] == register[instruction.getB()] ? 1 : 0;
+                break;
+        }
+
+        return register;
+    }
 }
