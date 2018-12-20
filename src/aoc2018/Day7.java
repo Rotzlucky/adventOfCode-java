@@ -2,8 +2,8 @@ package aoc2018;
 
 import aoc.Day;
 import aoc2018.helper.Worker;
-import javafx.util.Pair;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,7 +86,7 @@ public class Day7 extends Day {
     private Map<String, List<String>> getDependencies(List<String> inputs) {
         Map<String, List<String>> dependencies = new HashMap<>();
         for (String input : inputs) {
-            Pair<String, String> directive = getDirective(input);
+            Map.Entry<String, String> directive = getDirective(input);
 
             List<String> arrayList = dependencies.getOrDefault(directive.getValue(), new ArrayList<>());
             arrayList.add(directive.getKey());
@@ -99,7 +99,7 @@ public class Day7 extends Day {
         TreeSet<String> allSteps = new TreeSet<>();
 
         for (String input : inputs) {
-            Pair<String, String> directive = getDirective(input);
+            Map.Entry<String, String> directive = getDirective(input);
             allSteps.add(directive.getValue());
             allSteps.add(directive.getKey());
         }
@@ -125,7 +125,7 @@ public class Day7 extends Day {
         return Optional.ofNullable(nextStep);
     }
 
-    private Pair<String, String> getDirective(String input) {
+    private Map.Entry<String, String> getDirective(String input) {
         Pattern prePattern = Pattern.compile("(?<=Step ).*(?= must)");
         Pattern postPattern = Pattern.compile("(?<=step ).*(?= can begin.)");
 
@@ -144,6 +144,6 @@ public class Day7 extends Day {
             throw new IllegalArgumentException("Null found in Input!");
         }
 
-        return new Pair<>(pre, post);
+        return new AbstractMap.SimpleEntry<>(pre, post);
     }
 }

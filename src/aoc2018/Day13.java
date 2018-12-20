@@ -23,7 +23,7 @@ public class Day13 extends Day {
     protected void part1(List<String> inputs) {
         buildTrack(inputs);
 
-        printTrack();
+        //printTrack();
 
         Point crashSite;
 

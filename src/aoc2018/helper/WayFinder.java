@@ -1,7 +1,5 @@
 package aoc2018.helper;
 
-import com.sun.istack.internal.NotNull;
-
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,7 +34,7 @@ public class WayFinder {
         processQueue(getQueue(start));
     }
 
-    private TreeSet<Point> getQueue(@NotNull Point startingPoint) {
+    private TreeSet<Point> getQueue(Point startingPoint) {
         final Set<Point> visited = new HashSet<>();
         final Stack<Point> stack = new Stack<>();
 
@@ -91,7 +89,7 @@ public class WayFinder {
         }
     }
 
-    public List<Point> getNonBlockedNeighbours(@NotNull final Point point) {
+    public List<Point> getNonBlockedNeighbours(final Point point) {
         if (!cachedNeighbours.containsKey(point)) {
             final List<Point> neighbours = new ArrayList<>(4);
 
@@ -160,7 +158,7 @@ public class WayFinder {
         return distanceMap.getOrDefault(point, Integer.MAX_VALUE);
     }
 
-    public boolean unreachable(@NotNull final Point point) {
+    public boolean unreachable(final Point point) {
         return !distanceMap.containsKey(point);
     }
 }
