@@ -1,6 +1,7 @@
 package aoc2018.helper;
 
 public class Instruction {
+    private String opName;
     private int opCode;
     private int A;
     private int B;
@@ -36,5 +37,13 @@ public class Instruction {
 
     public void setC(int c) {
         C = c;
+    }
+
+    public String getOpName() {
+        return opName;
+    }
+
+    public void setOpName(String opName) {
+        this.opName = opName;
     }
 }
