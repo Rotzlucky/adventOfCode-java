@@ -4,7 +4,6 @@ import aoc.Day;
 import aoc2018.helper.Instruction;
 import aoc2018.helper.Operations;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,7 +51,7 @@ public class Day19 extends Day {
     protected void part1(List<String> inputs) {
         int startRegister = Integer.parseInt(inputs.get(0).replaceAll("#ip (\\d)", "$1"));
 
-        List<Instruction> instructions = getInstructions(inputs);
+        List<Instruction> instructions = Instruction.getInstructions(inputs);
 
         int[] register = new int[6];
         int solution = runSubTask(startRegister, instructions, register);
@@ -64,7 +63,7 @@ public class Day19 extends Day {
     protected void part2(List<String> inputs) {
         int startRegister = Integer.parseInt(inputs.get(0).replaceAll("#ip (\\d)", "$1"));
 
-        List<Instruction> instructions = getInstructions(inputs);
+        List<Instruction> instructions = Instruction.getInstructions(inputs);
 
         int[] register = new int[6];
         register[0] = 1;
@@ -112,26 +111,5 @@ public class Day19 extends Day {
             System.out.print(i + " ");
         }
         System.out.println();
-    }
-
-    private List<Instruction> getInstructions(List<String> inputs) {
-        List<Instruction> instructions = new ArrayList<>();
-        for (String instructionString : inputs.subList(1, inputs.size())) {
-            instructions.add(getInstruction(instructionString));
-        }
-        return instructions;
-    }
-
-    private Instruction getInstruction(String instructionString) {
-        Instruction instruction = new Instruction();
-
-        String[] split = instructionString.split(" ");
-
-        instruction.setOpName(split[0]);
-        instruction.setA(Integer.parseInt(split[1]));
-        instruction.setB(Integer.parseInt(split[2]));
-        instruction.setC(Integer.parseInt(split[3]));
-
-        return instruction;
     }
 }
