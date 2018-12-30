@@ -1,6 +1,7 @@
 package aoc2018;
 
 import aoc.Day;
+import aoc2018.helper.AStarGridFinder;
 
 import java.awt.Point;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class Day22 extends Day {
         for (int y = 0; y < cave.length; y++) {
             String row = "";
             for (int x = 0; x < cave[0].length; x++) {
-                int type = getType(cave, x, y);
+                int type = getType(x, y);
 
                 if (type == 0) {
                     row += ".";
@@ -41,16 +42,33 @@ public class Day22 extends Day {
 
                 riskLevel += type;
             }
-            System.out.println(row);
+            //System.out.println(row);
         }
 
         printSolution(1, riskLevel);
     }
 
-    private int getType(int[][] cave, int x, int y) {
+    @Override
+    protected void part2(List<String> inputs) {
+        prepareInput(inputs);
+
+        int[][] cave = new int[target.y * 2][target.x * 6];
+
+        for (int y = 0; y < cave.length; y++) {
+            for (int x = 0; x < cave[0].length; x++) {
+                cave[y][x] = getType(x, y);
+            }
+        }
+
+        AStarGridFinder aStarGridFinder = new AStarGridFinder(cave, new Point(0, 0), target);
+
+        printSolution(2, aStarGridFinder.getTotalTime());
+    }
+
+    private int getType(int x, int y) {
         Point key = new Point(x, y);
         Double value;
-        if ((x == 0 && y == 0) || (y == cave.length - 1 && x == cave[0].length - 1)) {
+        if ((x == 0 && y == 0) || (y == target.y && x == target.x)) {
             value = 0D;
         } else if (y == 0) {
             value = x * 16807D;
@@ -73,10 +91,5 @@ public class Day22 extends Day {
         int x = Integer.parseInt(inputs.get(1).replaceAll("target: (\\d*),(\\d*)", "$1"));
         int y = Integer.parseInt(inputs.get(1).replaceAll("target: (\\d*),(\\d*)", "$2"));
         target = new Point(x, y);
-    }
-
-    @Override
-    protected void part2(List<String> inputs) {
-
     }
 }
