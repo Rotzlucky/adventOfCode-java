@@ -5,9 +5,10 @@ import java.util.Objects;
 
 public class QueueNode {
     private Point self;
-    private Point predecessor;
+    private QueueNode predecessor;
     private int tool = -1;
     private int passedTime;
+    private int distance;
 
     public QueueNode(Point self) {
         this.self = self;
@@ -24,12 +25,13 @@ public class QueueNode {
         }
 
         QueueNode queueNode = (QueueNode) o;
-        return Objects.equals(self, queueNode.self);
+        return tool == queueNode.tool &&
+                Objects.equals(self, queueNode.self);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(self);
+        return Objects.hash(self, tool);
     }
 
     public Point getSelf() {
@@ -40,11 +42,11 @@ public class QueueNode {
         this.self = self;
     }
 
-    public Point getPredecessor() {
+    public QueueNode getPredecessor() {
         return predecessor;
     }
 
-    public void setPredecessor(Point predecessor) {
+    public void setPredecessor(QueueNode predecessor) {
         this.predecessor = predecessor;
     }
 
@@ -62,5 +64,25 @@ public class QueueNode {
 
     public void setPassedTime(int passedTime) {
         this.passedTime = passedTime;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public int getY() {
+        return getSelf().y;
+    }
+
+    public int getX() {
+        return getSelf().x;
+    }
+
+    public String getKey() {
+        return getSelf().x + "|" + getSelf().y + "|" + getTool();
     }
 }

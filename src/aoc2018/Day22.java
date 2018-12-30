@@ -52,7 +52,7 @@ public class Day22 extends Day {
     protected void part2(List<String> inputs) {
         prepareInput(inputs);
 
-        int[][] cave = new int[target.y * 2][target.x * 6];
+        int[][] cave = new int[target.y * 2][target.x * 3];
 
         for (int y = 0; y < cave.length; y++) {
             for (int x = 0; x < cave[0].length; x++) {

@@ -4,10 +4,10 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.function.ToIntFunction;
+import java.util.TreeSet;
 
 public class AStarGridFinder {
 
@@ -19,8 +19,7 @@ public class AStarGridFinder {
     private final Point start;
     private final Point target;
 
-    private Map<Point, Integer> distances = new HashMap<>();
-    private Map<Point, QueueNode> visited = new HashMap<>();
+    private Map<String, QueueNode> visited = new HashMap<>();
 
     public AStarGridFinder(int[][] grid, Point start, Point target) {
         this.grid = grid;
@@ -32,47 +31,40 @@ public class AStarGridFinder {
 
     public int getTotalTime() {
         List<QueueNode> track = new ArrayList<>();
-        QueueNode queueNode = visited.get(target);
+        QueueNode queueNode = visited.get(target.x + "|" + target.y + "|" + TORCH);
         while (queueNode.getPredecessor() != null) {
             track.add(0, queueNode);
-            queueNode = visited.get(queueNode.getPredecessor());
+            queueNode = queueNode.getPredecessor();
         }
-        track.add(0, visited.get(start));
+        track.add(0, visited.get(start.x + "|" + start.y + "|" + TORCH));
 
 //        for (QueueNode node : track) {
 //            System.out.println("Current square: " + node.getSelf().x + "/" + node.getSelf().y + " with toolType: " + node.getTool() + "." +
 //                    " Terrain is " + grid[node.getSelf().y][node.getSelf().x] + "." +
 //                    " Reached in " + node.getPassedTime() + " seconds");
 //        }
-
-        int maxX = track.stream().mapToInt(node -> node.getSelf().x).max().orElse(0);
-        System.out.println("Max X is " + maxX + " at gridWidth: " + grid[0].length);
+//
+//        int maxX = track.stream().mapToInt(node -> node.getSelf().x).max().orElse(0);
+//        System.out.println("Max X is " + maxX + " at gridWidth: " + grid[0].length);
 
         return track.get(track.size() - 1).getPassedTime();
     }
 
-    private void processQueue(PriorityQueue<Point> queue) {
+    private void processQueue(TreeSet<QueueNode> queue) {
         while (!queue.isEmpty()) {
-            Point point = queue.poll();
-            assert point != null;
 
-            QueueNode queueNode = visited.get(point);
-            // on firstNode initialize
-            if (queueNode.getTool() == -1) {
-                queueNode.setTool(TORCH); // set default tool as torch
-                queueNode.setPassedTime(0);
-            }
+            //printQueue(queue);
+            QueueNode queueNode = queue.pollFirst();
+            assert queueNode != null;
 
-            int type = grid[point.y][point.x];
+            int type = grid[queueNode.getSelf().y][queueNode.getSelf().x];
 
             for (Point connectedPoint : getConnectedNodes(queueNode)) {
-                QueueNode connectedNode = visited.get(connectedPoint);
-                Integer currentDistance = distances.get(connectedPoint);
-                int connectedType = grid[connectedPoint.y][connectedPoint.x];
-
                 int proposedDistance;
                 int time;
                 int tool;
+                int connectedType = grid[connectedPoint.y][connectedPoint.x];
+
                 if (connectedType != queueNode.getTool()) {
                     proposedDistance = queueNode.getPassedTime() + 1 + getManhattanDistance(connectedPoint, target);
                     tool = queueNode.getTool();
@@ -83,24 +75,54 @@ public class AStarGridFinder {
                     time = queueNode.getPassedTime() + 8;
                 }
 
-                if (proposedDistance < currentDistance) {
-                    connectedNode.setPredecessor(queueNode.getSelf());
-                    distances.put(connectedPoint, proposedDistance);
+                QueueNode connectedNode = getQueueNode(connectedPoint, tool);
+                Integer currentDistance = connectedNode.getDistance();
+                if (proposedDistance <= currentDistance) {
+                    connectedNode.setPredecessor(queueNode);
+                    connectedNode.setDistance(proposedDistance);
                     connectedNode.setTool(tool);
                     connectedNode.setPassedTime(time);
-                    queue.remove(connectedPoint);
-                    queue.add(connectedPoint);
+                    queue.remove(connectedNode);
+                    queue.add(connectedNode);
                 }
+                visited.put(connectedNode.getKey(), connectedNode);
             }
 
             if (queueNode.getSelf().equals(target)) {
                 if (queueNode.getTool() != TORCH) {
                     queueNode.setTool(TORCH);
                     queueNode.setPassedTime(queueNode.getPassedTime() + 7);
+                    visited.put(queueNode.getKey(), queueNode);
+
                 }
                 break;
             }
         }
+    }
+
+    private void printQueue(TreeSet<QueueNode> queue) {
+        System.out.println("------------------");
+        Iterator<QueueNode> iterator = queue.iterator();
+
+        while (iterator.hasNext()) {
+            QueueNode next = iterator.next();
+            System.out.println(next.getSelf().x + "/" + next.getSelf().y + " " + next.getDistance() + " " + next.getTool());
+        }
+    }
+
+    private QueueNode getQueueNode(Point connectedPoint, int tool) {
+        QueueNode queueNode;
+        String hash = connectedPoint.x + "|" + connectedPoint.y + "|" + tool;
+        if (visited.containsKey(hash)) {
+            queueNode = visited.get(hash);
+        } else {
+            queueNode = new QueueNode(connectedPoint);
+            queueNode.setTool(tool);
+            queueNode.setDistance(Integer.MAX_VALUE);
+            queueNode.setPassedTime(0);
+        }
+
+        return queueNode;
     }
 
     private int getSharedTool(int type, int connectedType) {
@@ -115,22 +137,20 @@ public class AStarGridFinder {
         return -1;
     }
 
-    private PriorityQueue<Point> getQueue() {
+    private TreeSet<QueueNode> getQueue() {
+        final Comparator comparator = Comparator.comparingInt(QueueNode::getDistance)
+                .thenComparingInt(QueueNode::getY)
+                .thenComparingInt(QueueNode::getX)
+                .thenComparingInt(QueueNode::getTool);
 
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[0].length; j++) {
-                QueueNode queueNode = new QueueNode(new Point(j, i));
-                distances.put(queueNode.getSelf(), Integer.MAX_VALUE);
-                visited.put(queueNode.getSelf(), queueNode);
-            }
-        }
+        final TreeSet<QueueNode> queue = new TreeSet<>(comparator);
 
-        distances.put(start, getManhattanDistance(start, target));
+        QueueNode queueNode = new QueueNode(start);
+        queueNode.setTool(TORCH);
+        queueNode.setDistance(getManhattanDistance(start, target));
+        queueNode.setPassedTime(0);
+        queue.add(queueNode);
 
-        final Comparator comparator = Comparator.comparingInt((ToIntFunction<Point>) distances::get);
-
-        final PriorityQueue<Point> queue = new PriorityQueue<>(comparator);
-        queue.addAll(visited.keySet());
         return queue;
     }
 
