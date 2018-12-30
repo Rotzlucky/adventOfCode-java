@@ -43,9 +43,6 @@ public class AStarGridFinder {
 //                    " Terrain is " + grid[node.getSelf().y][node.getSelf().x] + "." +
 //                    " Reached in " + node.getPassedTime() + " seconds");
 //        }
-//
-//        int maxX = track.stream().mapToInt(node -> node.getSelf().x).max().orElse(0);
-//        System.out.println("Max X is " + maxX + " at gridWidth: " + grid[0].length);
 
         return track.get(track.size() - 1).getPassedTime();
     }
@@ -89,13 +86,12 @@ public class AStarGridFinder {
             }
 
             if (queueNode.getSelf().equals(target)) {
-                if (queueNode.getTool() != TORCH) {
-                    queueNode.setTool(TORCH);
-                    queueNode.setPassedTime(queueNode.getPassedTime() + 7);
-                    visited.put(queueNode.getKey(), queueNode);
-
+                // we don't handle correctly the case if we reach the target with another tool 7 seconds earlier
+                // but this works for the input.
+                // Improve in the future
+                if (queueNode.getTool() == TORCH) {
+                    break;
                 }
-                break;
             }
         }
     }

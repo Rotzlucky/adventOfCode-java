@@ -28,7 +28,7 @@ public class Day22 extends Day {
         int riskLevel = 0;
 
         for (int y = 0; y < cave.length; y++) {
-            String row = "";
+            String row = y + ":\t";
             for (int x = 0; x < cave[0].length; x++) {
                 int type = getType(x, y);
 
