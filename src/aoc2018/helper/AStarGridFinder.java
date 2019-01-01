@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeSet;
 
 public class AStarGridFinder {
@@ -36,6 +37,8 @@ public class AStarGridFinder {
             track.add(0, queueNode);
             queueNode = queueNode.getPredecessor();
         }
+        track.add(0, getTargetNode());
+
         track.add(0, visited.get(start.x + "|" + start.y + "|" + TORCH));
 
 //        for (QueueNode node : track) {
@@ -45,6 +48,45 @@ public class AStarGridFinder {
 //        }
 
         return track.get(track.size() - 1).getPassedTime();
+    }
+
+    private QueueNode getTargetNode() {
+        QueueNode torchNode = getNode(target.x, target.y, TORCH);
+        QueueNode neitherNode = getNode(target.x, target.y, NEITHER);
+        QueueNode gearNode = getNode(target.x, target.y, CLIMBING_GEAR);
+
+        Optional<QueueNode> concurringTarget = getConcurringTarget(neitherNode, gearNode);
+
+        if (concurringTarget.isPresent()) {
+            QueueNode concurringNode = concurringTarget.get();
+            if (concurringNode.getPassedTime() <= torchNode.getPassedTime() - 7) {
+                return concurringNode;
+            } else {
+                return torchNode;
+            }
+        } else {
+            return torchNode;
+        }
+    }
+
+    private Optional<QueueNode> getConcurringTarget(QueueNode neitherNode, QueueNode gearNode) {
+        if (neitherNode == null && gearNode == null) {
+            return Optional.empty();
+        } else if (neitherNode == null) {
+            return Optional.of(gearNode);
+        } else if (gearNode == null) {
+            return Optional.of(neitherNode);
+        } else if (neitherNode.getPassedTime() < gearNode.getPassedTime()) {
+            return Optional.of(neitherNode);
+        } else if (gearNode.getPassedTime() < neitherNode.getPassedTime()) {
+            return Optional.of(gearNode);
+        }
+
+        return Optional.empty();
+    }
+
+    private QueueNode getNode(int x, int y, int tool) {
+        return visited.get(x + "|" + y + "|" + tool);
     }
 
     private void processQueue(TreeSet<QueueNode> queue) {
@@ -86,14 +128,18 @@ public class AStarGridFinder {
             }
 
             if (queueNode.getSelf().equals(target)) {
-                // we don't handle correctly the case if we reach the target with another tool 7 seconds earlier
-                // but this works for the input.
-                // Improve in the future
-                if (queueNode.getTool() == TORCH) {
+                if (queueNode.getTool() == TORCH || !targetReachedWithTorchInNext7Steps(queue, queueNode)) {
                     break;
                 }
             }
         }
+    }
+
+    private boolean targetReachedWithTorchInNext7Steps(TreeSet<QueueNode> queue, QueueNode queueNode) {
+        return queue.stream()
+                .filter(n -> n.getDistance() <= queueNode.getDistance() + 6)
+                .filter(n -> n.getSelf().x == target.x && n.getSelf().y == target.y)
+                .anyMatch(n -> n.getTool() == TORCH);
     }
 
     private void printQueue(TreeSet<QueueNode> queue) {
