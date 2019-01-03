@@ -31,7 +31,7 @@ public class Day21 extends Day {
         List<Instruction> instructions = Instruction.getInstructions(inputs);
 
         int[] register = new int[6];
-        printSolution(1, runSubTask(startRegister, instructions, register, false));
+        printSolution(2, runSubTask(startRegister, instructions, register, false));
     }
 
     private int runSubTask(int startRegister, List<Instruction> instructions, int[] register, boolean returnOnFirst) {
