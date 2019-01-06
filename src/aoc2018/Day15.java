@@ -15,9 +15,9 @@ import java.util.stream.Stream;
 
 /**
  * Inspired by https://www.reddit.com/r/adventofcode/comments/a6chwa/2018_day_15_solutions/
- *
+ * <p>
  * especially https://github.com/akaritakai/AdventOfCode2018/blob/master/src/main/java/net/akaritakai/aoc2018/Problem15.java
- *
+ * <p>
  * Part 2 not optimized. Takes a few seconds
  */
 public class Day15 extends Day {
@@ -34,11 +34,13 @@ public class Day15 extends Day {
     private List<Combatant> elves = new ArrayList<>();
     private List<Combatant> goblins = new ArrayList<>();
 
+    private int printMode = 0;
+
     @Override
     protected void part1(List<String> inputs) {
         prepare(inputs, 3);
 
-        printSolution(1, runSimulation(0));
+        printSolution(1, runSimulation(printMode));
     }
 
     @Override
@@ -49,7 +51,7 @@ public class Day15 extends Day {
 
             int initialElvesCount = elves.size();
 
-            int solution = runSimulation(0);
+            int solution = runSimulation(printMode);
 
             if (elves.size() == initialElvesCount) {
                 int sum = Stream.of(elves, goblins)
@@ -57,8 +59,11 @@ public class Day15 extends Day {
                         .filter(c -> c.getHitPoints() > 0)
                         .mapToInt(c -> c.getHitPoints())
                         .sum();
-                System.out.println("Elves win with attackPower: " + i + " in Round " + solution / sum + " . " +
-                        "Elves alive: " + elves.size() + " hitpoints: " + sum);
+
+                if (printMode >= ROUND) {
+                    System.out.println("Elves win with attackPower: " + i + " in Round " + solution / sum + " . " +
+                            "Elves alive: " + elves.size() + " hitpoints: " + sum);
+                }
                 printSolution(2, solution);
                 break;
             }
@@ -225,7 +230,7 @@ public class Day15 extends Day {
                         map[y][x] = '.';
                         break;
                     default:
-                       map[y][x] = '.';
+                        map[y][x] = '.';
                 }
             }
             y++;

@@ -35,7 +35,7 @@ public class Day17 extends Day {
             }
         }
 
-        printCave();
+        //printCave();
 
         int minY = clay.stream().mapToInt(p -> p.y).min().orElseThrow();
         int count = countFlowAndSettle(minY);
