@@ -30,10 +30,44 @@ public class Day24 extends Day {
     protected void part1(List<String> inputs) {
         prepareInput(inputs);
 
+        int solution = runSimulation();
+        printSolution(1, solution);
+    }
+
+    @Override
+    protected void part2(List<String> inputs) {
+        int boost = 1;
+        int solution;
+        while (true) {
+            prepareInput(inputs);
+
+            try {
+                for (FactionGroup factionGroup : immuneSystems) {
+                    factionGroup.addBoost(boost);
+                }
+                solution = runSimulation();
+                if (!immuneSystems.isEmpty()) {
+                    break;
+                }
+            } catch (RuntimeException e) {
+                if (debug) {
+                    System.out.println("Found stalemate for boost: " + boost);
+                }
+            }
+
+            boost++;
+        }
+
+        printSolution(2, solution);
+    }
+
+    private int runSimulation() {
+        int lastRoundsTotalHitpoints = 0;
         while (!infections.isEmpty() && !immuneSystems.isEmpty()) {
             printStatus();
             targetPhase();
             attackPhase();
+            lastRoundsTotalHitpoints = calculateHitPoints(lastRoundsTotalHitpoints);
             resetDefendingState();
         }
 
@@ -45,12 +79,20 @@ public class Day24 extends Day {
         }
 
         printStatus();
-        printSolution(1, solution);
+        return solution;
     }
 
-    @Override
-    protected void part2(List<String> inputs) {
+    private int calculateHitPoints(int lastRoundsTotalHitPoint) {
+        int totalHitPoints = Stream.of(infections, immuneSystems)
+                .flatMap(Collection::stream)
+                .mapToInt((FactionGroup f) -> f.getUnitCount() * f.getHitPoints())
+                .sum();
 
+        if (totalHitPoints == lastRoundsTotalHitPoint) {
+            throw new RuntimeException("stalemate found");
+        }
+
+        return totalHitPoints;
     }
 
     private void resetDefendingState() {
@@ -231,6 +273,9 @@ public class Day24 extends Day {
     }
 
     private void prepareInput(List<String> inputs) {
+        infections = new ArrayList<>();
+        immuneSystems = new ArrayList<>();
+
         Pattern pattern = Pattern.compile("^(?<unitCount>\\d*) units each with (?<hitPoints>\\d*) hit points " +
                 "(?<modifiers>\\(.*\\) )?with an attack that does (?<attackPower>\\d*) (?<attackType>[a-z]*) " +
                 "damage at initiative (?<initiative>\\d*)$");

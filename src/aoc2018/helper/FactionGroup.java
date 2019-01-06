@@ -10,12 +10,12 @@ public class FactionGroup {
     private int number;
     private final String faction;
     private final int hitPoints;
-    private final int attackPower;
     private final int initiative;
     private final String attackType;
     private final List<String> immunities;
     private final List<String> weakness;
 
+    private int attackPower;
     private int unitCount;
     private boolean defending;
     private FactionGroup defender;
@@ -137,5 +137,9 @@ public class FactionGroup {
 
     public void setNumber(int number) {
         this.number = number;
+    }
+
+    public void addBoost(int boostValue) {
+        attackPower += boostValue;
     }
 }
